@@ -6,10 +6,18 @@ import operation.star_weaving_agent_download.func as func
 from sanic.response import text
 mkdir('./cache_download_files/')
 
-def download_api(get_or_post, enableSession, rep, **para):
-    func.download(get_or_post('url'),para['request'].ip)
+def new_download_api(get_or_post, enableSession, rep, **para):
+    func.new_download(get_or_post('url'),para['request'].ip)
     return rep(text('OK'))
 
+def download_api(get_or_post, enableSession, rep, **para):
+    return rep(func.download(get_or_post('url')))
+
+def download_file_api(get_or_post, enableSession, rep, **para):
+    return rep(func.download_file(get_or_post('url')),_async=True)
+
 api = {
-    'download':download_api
+    'new-download':new_download_api,
+    'download':download_api,
+    'download-file':download_file_api
 }

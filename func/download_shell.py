@@ -29,9 +29,11 @@ import subprocess
 import os
 import base64
 from urllib.parse import quote
-
+import json
+import time
 def b64decode(s):
     return str(base64.b64decode(s), "utf-8")
+
 
 arg_data = arg('',['url','path'])
 root_path = arg_data['--path']
@@ -40,8 +42,7 @@ if ('https:' in url):
     url = 'https:'+quote(url.replace('https:',''),encoding = 'utf-8')
 else:
     url = 'http:'+quote(url.replace('http:',''),encoding = 'utf-8')
-# print('aaa:'+root_path)
 mkdir(root_path)
 os.chdir(root_path)
 cmd= f'aria2c -s 4 -x 8 -j 4 {url}'
-print(subprocess.call(cmd, shell=True))
+complete = subprocess.call(cmd, shell=True)
