@@ -31,10 +31,10 @@ import base64
 from urllib.parse import quote
 import json
 import time
+import requests
+port = 7000
 def b64decode(s):
     return str(base64.b64decode(s), "utf-8")
-
-
 arg_data = arg('',['url','path'])
 root_path = arg_data['--path']
 url = b64decode(arg_data['--url'])
@@ -43,6 +43,14 @@ if ('https:' in url):
 else:
     url = 'http:'+quote(url.replace('http:',''),encoding = 'utf-8')
 mkdir(root_path)
-os.chdir(root_path)
-cmd= f'aria2c -s 4 -x 8 -j 4 {url}'
+os.chdir(root_path) # 更改运行路径
+cmd= f'aria2c --console-log-level=error -c -x 16 -s 16 {url}'
 complete = subprocess.call(cmd, shell=True)
+
+with open('../../swad_data/queue.json','r') as fr: # 更改队列
+    data = json.loads(fr.read())
+    del data[0]
+    with open('../../swad_data/queue.json','w') as fw:fw.write(json.dumps(data))
+
+secret_key = '114514'
+requests.get(f'https://dsw-gateway-cn-hangzhou.data.aliyun.com/dsw-75218/ide/proxy/7000/api/top_execution_queue?secret-key={secret_key}&xv=1') # 继续执行队列
